@@ -10,8 +10,7 @@ time. GitHub stores none of them.
   that GitHub makes for that job. Nobody stores a password or an API key for
   the pipeline.
 - **Each environment gets only its own secrets.** A dev run reads the dev
-  secrets. A prod run reads the prod secrets, and only after a person
-  approves it.
+  secrets. Only a run from `main` reads the prod secrets.
 - **One change, in one place.** When a secret changes in the vault, the next
   run gets the new value. Nothing changes in GitHub.
 - **Every fetch is recorded.** Idira's audit log shows which repo and which
@@ -30,7 +29,7 @@ Run them in this order, from the Actions tab.
 | --- | --- |
 | [1. Before: secrets stored in GitHub](.github/workflows/1-before-stored-secrets.yml) | The usual way: the secrets are copies in the repo's settings. GitHub masks them in the log, but any workflow in the repo can read them, and one line of script prints them anyway. Here they are placeholders |
 | [2. Show what GitHub tells Idira](.github/workflows/2-show-token-claims.yml) | The job's identity: the claims in the token that GitHub makes for the job |
-| [3. After: secrets fetched from Idira](.github/workflows/3-after-idira-secrets.yml) | The same pipeline, with every secret fetched from Idira at run time. A push to `dev` runs it with the dev secrets. A push to `main` runs it with the prod secrets, after a reviewer approves |
+| [3. After: secrets fetched from Idira](.github/workflows/3-after-idira-secrets.yml) | The same pipeline, with every secret fetched from Idira at run time. A push to `dev` runs it with the dev secrets. A push to `main` runs it with the prod secrets |
 | [4. Dev asks for a prod secret](.github/workflows/4-dev-asks-for-prod.yml) | The dev pipeline asks for a prod secret, and Idira refuses. The run goes green when the refusal happens |
 
 Compare workflow 1 and workflow 3 side by side. The stages are the same, and
@@ -83,9 +82,8 @@ environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 ```
 
 Each GitHub environment has a variable, `SAFE`, with the name of its safe, so
-one workflow file serves both environments. The `prod` environment needs a
-reviewer's approval before the job starts. Until then, the job does not ask
-Idira for anything.
+one workflow file serves both environments. The `prod` environment runs only
+from `main`, and the prod identity in Idira requires `main` too.
 
 ## Why the dev pipeline sees "404"
 
