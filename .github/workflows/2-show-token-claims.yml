@@ -18,4 +18,4 @@ jobs:
             "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=idira-secrets-manager" | jq -r .value)
           echo "$token" | jq -R 'split(".")[1] | gsub("-"; "+") | gsub("_"; "/")
             | . + ("=" * ((4 - length % 4) % 4)) | @base64d | fromjson
-            | {sub, repository, repository_owner, repository_owner_id, environment, ref, aud, iss, workflow, workflow_ref, event_name, actor}'
+            | {sub, repository, repository_owner, repository_owner_id, environment, ref, aud, iss, workflow_ref, event_name, actor}'
