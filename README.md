@@ -28,7 +28,7 @@ Run them in this order, from the Actions tab.
 | Workflow | What it shows |
 | --- | --- |
 | [1. Before: copies of secrets stored in GitHub](.github/workflows/1-before-stored-secrets.yml) | The usual way: the secrets are copies in the repo's settings. GitHub masks them in the log, but any workflow in the repo can read them, and one line of script prints them anyway. Here they are placeholders |
-| [2. Who is this job? GitHub's signed token](.github/workflows/2-show-token-claims.yml) | The job's identity: the claims in the token that GitHub makes for the job |
+| [2. Who is this job? GitHub's signed token](.github/workflows/2-show-token-claims.yml) | The job's identity: the claims in the token that GitHub makes for the job. The token also names the workflow file and what started the run |
 | [3. After: no stored secrets, fetched at run time from Idira](.github/workflows/3-after-idira-secrets.yml) | The same pipeline, with every secret fetched from Idira at run time. A push to `dev` runs it with the dev secrets. A push to `main` runs it with the prod secrets |
 | [4. Dev asks for prod, and Idira refuses](.github/workflows/4-dev-asks-for-prod.yml) | The dev pipeline asks for a prod secret, and Idira refuses. The run goes green when the refusal happens |
 
