@@ -9,5 +9,8 @@ environment. Idira records every fetch.
 
 Work in progress. The full description comes when the demo is complete.
 
+Idira Secrets Manager was called Conjur before. The old name stays in the
+`cyberark/conjur-action` action and in the `CONJUR_*` variables.
+
 Every secret value in this demo is fake. The pipeline log prints the values
 on purpose, only to prove that they arrived.

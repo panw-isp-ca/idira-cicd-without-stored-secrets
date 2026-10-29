@@ -1,4 +1,4 @@
-name: Show what GitHub tells Idira
+name: "2. Show what GitHub tells Idira"
 
 on:
   workflow_dispatch:
@@ -8,13 +8,13 @@ permissions:
   contents: read
 
 jobs:
-  claims:
+  show-claims:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
     steps:
       - name: Print the claims in this job's GitHub token
         run: |
-          token=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          token=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
             "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=idira-secrets-manager" | jq -r .value)
           echo "$token" | jq -R 'split(".")[1] | gsub("-"; "+") | gsub("_"; "/")
             | . + ("=" * ((4 - length % 4) % 4)) | @base64d | fromjson

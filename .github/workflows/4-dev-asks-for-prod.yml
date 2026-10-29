@@ -1,4 +1,4 @@
-name: Dev asks for a prod secret
+name: "4. Dev asks for a prod secret"
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
           account: ${{ vars.CONJUR_ACCOUNT }}
           authn_id: ${{ vars.CONJUR_AUTHN_ID }}
           audience: idira-secrets-manager
-          secrets: data/vault/fake-payments-ci-dev/fake-sonarqube-token/password|DEV_SONAR_TOKEN
+          secrets: data/vault/${{ vars.SAFE }}/fake-sonarqube-token/password|DEV_SONAR_TOKEN
 
       - name: Fetch a prod secret with the dev pipeline's identity
         id: fetch
@@ -32,7 +32,7 @@ jobs:
           audience: idira-secrets-manager
           secrets: data/vault/fake-payments-ci-prod/fake-sonarqube-token/password|SONAR_TOKEN
 
-      - name: Check that Idira refused
+      - name: Check that Idira did not give the prod secret
         env:
           OUTCOME: ${{ steps.fetch.outcome }}
         run: |
@@ -41,4 +41,4 @@ jobs:
             exit 1
           fi
           echo "The dev pipeline logged in and read its dev secret: $(echo "$DEV_SONAR_TOKEN" | sed 's/./& /g')"
-          echo "Idira refused the prod secret: the dev pipeline cannot read the prod safe fake-payments-ci-prod."
+          echo "Idira did not give the dev pipeline the prod secret (see the HTTP 404 above)."
