@@ -1,4 +1,4 @@
-name: "4. Dev asks for a prod secret"
+name: "4. Dev asks for prod, and Idira refuses"
 
 on:
   workflow_dispatch:

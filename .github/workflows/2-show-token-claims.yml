@@ -1,4 +1,4 @@
-name: "2. Show what GitHub tells Idira"
+name: "2. Who is this job? GitHub's signed token"
 
 on:
   workflow_dispatch:
