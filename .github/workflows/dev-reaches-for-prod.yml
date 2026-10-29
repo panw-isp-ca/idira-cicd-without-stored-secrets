@@ -1,0 +1,44 @@
+name: Dev asks for a prod secret
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  dev-asks-for-prod:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Fetch a dev secret with the dev pipeline's identity
+        uses: cyberark/conjur-action@f15cb4a7a519b66fd902e615840dd881c01839c5 # v3.0.1
+        with:
+          url: ${{ vars.CONJUR_URL }}
+          account: ${{ vars.CONJUR_ACCOUNT }}
+          authn_id: ${{ vars.CONJUR_AUTHN_ID }}
+          audience: idira-secrets-manager
+          secrets: data/vault/fake-payments-ci-dev/fake-sonarqube-token/password|DEV_SONAR_TOKEN
+
+      - name: Fetch a prod secret with the dev pipeline's identity
+        id: fetch
+        continue-on-error: true
+        uses: cyberark/conjur-action@f15cb4a7a519b66fd902e615840dd881c01839c5 # v3.0.1
+        with:
+          url: ${{ vars.CONJUR_URL }}
+          account: ${{ vars.CONJUR_ACCOUNT }}
+          authn_id: ${{ vars.CONJUR_AUTHN_ID }}
+          audience: idira-secrets-manager
+          secrets: data/vault/fake-payments-ci-prod/fake-sonarqube-token/password|SONAR_TOKEN
+
+      - name: Check that Idira refused
+        env:
+          OUTCOME: ${{ steps.fetch.outcome }}
+        run: |
+          if [ "$OUTCOME" = "success" ]; then
+            echo "::error::The dev pipeline read a prod secret."
+            exit 1
+          fi
+          echo "The dev pipeline logged in and read its dev secret: $(echo "$DEV_SONAR_TOKEN" | sed 's/./& /g')"
+          echo "Idira refused the prod secret: the dev pipeline cannot read the prod safe fake-payments-ci-prod."
